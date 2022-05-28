@@ -5,3 +5,9 @@
 ```
 export CPLUS_INCLUDE_PATH=../include/
 ```
+
+## Compile
+```
+g++ file.cpp glad.c -lglfw3 -lpthread -ldl
+```
+
