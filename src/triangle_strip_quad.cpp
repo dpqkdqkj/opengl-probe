@@ -14,19 +14,19 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 512;
 const unsigned int SCR_HEIGHT = 512;
 
-    //"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-const char *vertexShaderSource = "#version 330 core\n"
+const char *vertexShaderSource = "#version 420 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "uniform mat4 model;\n"
     "void main()\n"
     "{\n"
     "   gl_Position = model * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
-const char *fragmentShaderSource = "#version 330 core\n"
+
+const char *fragmentShaderSource = "#version 420 core\n"
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "   FragColor = vec4(1.4f, 0.5f, 0.8f, 1.0f);\n"
+    "   FragColor = vec4(1.0f, 0.0f, 1.0f, 1.0f);\n"
     "}\n\0";
 
 int main()
@@ -106,10 +106,10 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        0.5f, -0.5f, 0.0f, 
-        0.5f,  0.5f, 0.0f,
-       -0.5f, -0.5f, 0.0f, 
-       -0.5f,  0.5f, 0.0f
+        0.5f, -0.5f, 0.0f, // rb
+        0.5f,  0.5f, 0.0f, // rt
+       -0.5f, -0.5f, 0.0f, // lb
+       -0.5f,  0.5f, 0.0f  // lt
     }; 
 
     unsigned int VBO, VAO;
@@ -133,9 +133,10 @@ int main()
 
 
     // uncomment this call to draw in wireframe polygons.
-    //glLineWidth(10);
+    //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     //glEnable(GL_LINE_SMOOTH);
+    //glLineWidth(1);
 
     // render loop
     // -----------
@@ -147,7 +148,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        //glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         // draw our first triangle
@@ -157,19 +158,42 @@ int main()
 
         float timeValue = glfwGetTime();
         float angle = timeValue * 64;
+        glm::vec3 scale = glm::vec3(0.5f, 0.5f, 0.5f);
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
         model = glm::rotate(model, glm::radians(-angle), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.5f, 0.5f, 0.0f));
         model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-0.5f, 0.5f, 0.0f));
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, scale);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.5f, -0.5f, 0.0f));
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, scale);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
+        model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, scale);
+        glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         glBindVertexArray(0); // no need to unbind it every time 
  
