@@ -17,9 +17,15 @@ const unsigned int SCR_HEIGHT = 512;
 const char *vertexShaderSource = "#version 420 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "uniform mat4 model;\n"
+    "uniform mat4 view;\n"
+    "uniform mat4 projection;\n"
     "void main()\n"
     "{\n"
-    "   gl_Position = model * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    //"   gl_Position = projection * view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   gl_Position = projection * model * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    //"   gl_Position = view * model * vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    //"   gl_Position = view * model * vec4(aPos.x, aPos.y, aPos.z + 2, 1.0);\n"
+
     "}\0";
 
 const char *fragmentShaderSource = "#version 420 core\n"
@@ -135,8 +141,34 @@ int main()
     // uncomment this call to draw in wireframe polygons.
     //glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     //glEnable(GL_LINE_SMOOTH);
     //glLineWidth(1);
+
+    glm::mat4 view = glm::mat4(1.0f);
+    //view = glm::translate(view, glm::vec3(0.5f, -0.5f, -3.0f));
+    view = glm::lookAt(glm::vec3(0.0f, 0.0f, 16.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    //
+    //glm::mat4 projection = glm::ortho(0.0f, (float)SCR_WIDTH, 0.0f, (float)SCR_HEIGHT, 0.1f, 100.0f);
+    //glm::mat4 projection = glm::mat4(1.0f);
+    //glm::mat4 projection = glm::perspective(glm::radians(30.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    //glm::mat4 projection = glm::ortho(0.0f, 512.0f, 512.0f, 0.0f, -1.0f, 1.0f);
+    //glm::mat4 projection = glm::ortho(0.0f, 512.0f, .0f, 512.0f, -1.0f, 1.0f);
+    //glm::mat4 projection = glm::perspective(glm::radians(0.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+    //glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+
+    glUseProgram(shaderProgram);
+
+    //glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "view"), 1, GL_FALSE, &view[0][0]);
+    
+    glm::mat4 projection = glm::ortho(0.0f, 512.0f, 512.0f, 0.0f, -1.0f, 1.0f);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+
+    float q_a = 128.0f;
+    float center_x = (float)SCR_WIDTH/2.0f;
+    float center_y = (float)SCR_HEIGHT/2.0f;
+    glm::vec3 scale = glm::vec3(q_a, q_a, 0.0f);
 
     // render loop
     // -----------
@@ -154,42 +186,41 @@ int main()
         // draw our first triangle
         glUseProgram(shaderProgram);
 
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-
         float timeValue = glfwGetTime();
         float angle = timeValue * 64;
-        glm::vec3 scale = glm::vec3(0.5f, 0.5f, 0.5f);
+
+        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
 
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+        model = glm::translate(model, glm::vec3(center_x, center_y, 0.0f));
         model = glm::rotate(model, glm::radians(-angle), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.5f, 0.5f, 0.0f));
+        model = glm::translate(model, glm::vec3(center_x + q_a, center_y + q_a, 0.0f));
         model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-0.5f, 0.5f, 0.0f));
+        model = glm::translate(model, glm::vec3(center_x - q_a, center_y + q_a, 0.0f));
         model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.5f, -0.5f, 0.0f));
+        model = glm::translate(model, glm::vec3(center_x + q_a, center_y - q_a, 0.0f));
         model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
         model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
+        model = glm::translate(model, glm::vec3(center_x - q_a, center_y - q_a, 0.0f));
         model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
         model = glm::scale(model, scale);
         glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
