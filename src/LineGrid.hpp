@@ -44,7 +44,7 @@ void LineGrid::compile_shader()
         "out vec4 FragColor;\n"
         "void main()\n"
         "{\n"
-        "   FragColor = vec4(0.2f, 0.2f, 0.2f, 1.0f);\n"
+        "   FragColor = vec4(0.16f, 0.16f, 0.16f, 1.0f);\n"
         "}\n\0";
 
     // build and compile our shader program

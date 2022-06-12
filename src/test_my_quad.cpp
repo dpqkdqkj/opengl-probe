@@ -136,7 +136,8 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         float timeValue = glfwGetTime();
-        float angle = timeValue * 64;
+        float angle = timeValue * 64.0f;
+        //float angle = timeValue * 48.0f;
 
         glUseProgram(grid.shaderProgram);
         grid.draw();
@@ -151,14 +152,17 @@ int main()
         for (float y = 64.0f + q_a/2; y < (float)SCR_HEIGHT - 64.0f; y += 2 * q_a) {
             for (float x = 64.0f + q_a/2; x < (float)SCR_WIDTH - 64.0f; x += 2 * q_a) {
                 quad.draw(glm::vec3(x, y, 0.0f), angle, q_a);
+                quad.draw(glm::vec3(x + q_a, y + q_a, 0.0f), -angle, q_a);
             }
         }
+        /*
         for (float y = 64.0f + q_a/2 + q_a; y < (float)SCR_HEIGHT - 64.0f; y += 2 * q_a) {
             for (float x = 64.0f + q_a/2 + q_a; x < (float)SCR_WIDTH - 64.0f; x += 2 * q_a) {
                 //quad.draw(glm::vec3(x, y, 0.0f), -angle, q_a/2.0f);
                 quad.draw(glm::vec3(x, y, 0.0f), -angle, q_a);
             }
         }
+        */
               
         //quad.draw(glm::vec3(q_a/2, q_a/2, 0.0f), angle, q_a);
         /*
