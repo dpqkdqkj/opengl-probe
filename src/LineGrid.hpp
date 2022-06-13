@@ -11,16 +11,24 @@ namespace myPrimitive {
 class LineGrid {
     GLuint VAO;
 
-    float padding = 64.0f;
-    float step = 48.0f;
+    //float padding = 64.0f;
+    float padding;
+    //float step = 48.0f;
+    float step;
 
-    float max_x = 512.0f - padding;
-    float max_y = 512.0f - padding;
+    float SCR_WIDTH;
+    float SCR_HEIGHT;
 
+    float max_x;
+    float max_y;
     GLuint n;
-
 public:
-    LineGrid() {};
+    LineGrid(float a_SCR_WIDTH, float a_SCR_HEIGHT, float a_padding, float a_step) {
+        SCR_WIDTH = a_SCR_WIDTH;
+        SCR_HEIGHT = a_SCR_HEIGHT;
+        padding = a_padding;
+        step = a_step;
+    };
     ~LineGrid() {};
 
     /* ONCE */
@@ -92,6 +100,8 @@ void LineGrid::compile_shader()
 
 void LineGrid::initialize()
 {
+    max_x = SCR_WIDTH - padding;
+    max_y = SCR_HEIGHT - padding;
     this->compile_shader();
 
     std::vector<float> lines_vertices;

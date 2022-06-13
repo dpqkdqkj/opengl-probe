@@ -54,32 +54,40 @@ int main()
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     float q_a = 48.0f;
+    float padding = 64.0f;
 
-    myPrimitive::LineGrid grid;
+    myPrimitive::LineGrid grid((float)SCR_WIDTH, (float)SCR_HEIGHT, padding, q_a);
     grid.initialize();
+
     myPrimitive::Quad quad;
     quad.initialize();
 
-    /* MAIN LOOP */
-    /* --------- */
+    float min_x_grid = padding + q_a/2.0f;
+    float min_y_grid = padding + q_a/2.0f;
+    float max_x_grid = (float)SCR_WIDTH - padding - q_a/2.0f;
+    float max_y_grid = (float)SCR_HEIGHT - padding - q_a/2.0f;
+    float step_quads = 2.0f * q_a;
+
+    /* -----------
+     *  Main loop
+     * ----------- */
     while (!glfwWindowShouldClose(window))
     {
         processInput(window);
-
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        grid.draw();
-
         float timeValue = glfwGetTime();
         float angle = timeValue * 64.0f;
-        for (float y = 64.0f + q_a/2.0f; y < (float)SCR_HEIGHT - 64.0f; y += 2.0f * q_a) {
-            for (float x = 64.0f + q_a/2.0f; x < (float)SCR_WIDTH - 64.0f; x += 2.0f * q_a) {
+
+        grid.draw();
+        for (float y = min_y_grid; y < max_y_grid; y += step_quads) {
+            for (float x = min_x_grid; x < max_x_grid; x += step_quads) {
                 quad.draw(glm::vec3(x      , y      , 0.0f), angle, q_a);
                 quad.draw(glm::vec3(x + q_a, y + q_a, 0.0f), -angle, q_a);
             }
         }
-              
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
