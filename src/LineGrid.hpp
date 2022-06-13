@@ -101,7 +101,7 @@ void LineGrid::initialize()
         lines_vertices.push_back(min_x);
         lines_vertices.push_back(y);
         lines_vertices.push_back(0.0f);
-
+        n++;
         lines_vertices.push_back(max_x);
         lines_vertices.push_back(y);
         lines_vertices.push_back(0.0f);
@@ -112,7 +112,7 @@ void LineGrid::initialize()
         lines_vertices.push_back(x);
         lines_vertices.push_back(padding);
         lines_vertices.push_back(0.0f);
-
+        n++;
         lines_vertices.push_back(x);
         lines_vertices.push_back(max_y);
         lines_vertices.push_back(0.0f);
@@ -133,23 +133,20 @@ void LineGrid::initialize()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
     glBindVertexArray(0); 
+
+    glm::mat4 projection = glm::ortho(0.0f, 512.0f, 512.0f, 0.0f, -1.0f, 1.0f);
+    glUseProgram(shaderProgram);
+    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
 }
 
 void LineGrid::draw()
 {
-    /*
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, pos);
-    model = glm::rotate(model, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f));
-    model = glm::scale(model, glm::vec3(size, size, 0.0f));
-
-    glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "model"), 1, GL_FALSE, &model[0][0]);
-    */
-
+    glUseProgram(shaderProgram);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_LINES, 0, 2*n);
+    glDrawArrays(GL_LINES, 0, n);
     glBindVertexArray(0);
 }
+
 
 }
 
