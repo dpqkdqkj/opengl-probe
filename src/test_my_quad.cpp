@@ -68,11 +68,36 @@ int main()
     float max_y_grid = (float)SCR_HEIGHT - padding - q_a/2.0f;
     float step_quads = 2.0f * q_a;
 
+
+    // time management
+    GLfloat currentFrame = 0.0f, deltaTime = 0.0f, lastFrame = 0.0f;
+    GLfloat time = 0.0f;
+    GLuint  fps = 0;
+    GLuint  last_fps = 0;
+
     /* -----------
      *  Main loop
      * ----------- */
     while (!glfwWindowShouldClose(window))
     {
+        // - calculate time spent on last frame
+        currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        // - periodcally display the FPS the game is running in
+        time += deltaTime;
+        ++fps;
+        if (time >= 1.0f) {
+            time = 1.0f - time;
+            if (fps != last_fps) {
+                glfwSetWindowTitle(window, std::string("FPS: " + std::to_string(fps)).c_str());
+                last_fps = fps;
+                std::cout << fps << "\n";
+            }
+            fps = 0;
+        }
+
         processInput(window);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -83,7 +108,7 @@ int main()
         grid.draw();
         for (float y = min_y_grid; y < max_y_grid; y += step_quads) {
             for (float x = min_x_grid; x < max_x_grid; x += step_quads) {
-                quad.draw(glm::vec3(x      , y      , 0.0f), angle, q_a);
+                quad.draw(glm::vec3(x      , y      , 0.0f),  angle, q_a);
                 quad.draw(glm::vec3(x + q_a, y + q_a, 0.0f), -angle, q_a);
             }
         }
