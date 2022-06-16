@@ -9,9 +9,14 @@
 
 #include "Quad.hpp"
 #include "LineGrid.hpp"
+#include "Player.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, myGame::Player& player);
+
+myGame::Player player;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // settings
 const unsigned int SCR_WIDTH = 512;
@@ -53,7 +58,10 @@ int main()
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+//glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
+
     float q_a = 48.0f;
+    //float q_a = 128.0f;
     float padding = 64.0f;
 
     myPrimitive::LineGrid grid((float)SCR_WIDTH, (float)SCR_HEIGHT, padding, q_a);
@@ -61,6 +69,14 @@ int main()
 
     myPrimitive::Quad quad;
     quad.initialize();
+
+    //myGame::Player player;
+    player.size = q_a;
+    player.p_pos = glm::vec3(padding + q_a * 1 + q_a/2.0f, padding + q_a * 1 + q_a/2.0f, 0.0f);
+    player.initialize();
+
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     float min_x_grid = padding + q_a/2.0f;
     float min_y_grid = padding + q_a/2.0f;
@@ -98,7 +114,6 @@ int main()
             fps = 0;
         }
 
-        processInput(window);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -106,12 +121,15 @@ int main()
         float angle = timeValue * 64.0f;
 
         grid.draw();
+        /*
         for (float y = min_y_grid; y < max_y_grid; y += step_quads) {
             for (float x = min_x_grid; x < max_x_grid; x += step_quads) {
                 quad.draw(glm::vec3(x      , y      , 0.0f),  angle, q_a);
                 quad.draw(glm::vec3(x + q_a, y + q_a, 0.0f), -angle, q_a);
             }
         }
+        */
+        player.draw();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -131,10 +149,72 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+
+GLfloat currentFrame = 0.0f, deltaTime = 0.0f, lastFrame = 0.0f;
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    /*
+    if (action == GLFW_RELEASE) {
+        return;
+    }
+    switch (key) {
+            case GLFW_KEY_J: player.p_pos.y += player.size; break;
+            case GLFW_KEY_K: player.p_pos.y -= player.size; break;
+            case GLFW_KEY_L: player.p_pos.x += player.size; break;
+            case GLFW_KEY_H: player.p_pos.x -= player.size; break;
+        }
+    */
+    //GLfloat currentFrame = 0.0f, deltaTime = 0.0f, lastFrame = 0.0f;
+
+    currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    if ((action != GLFW_RELEASE) && deltaTime >= 0.08f) {
+        switch (key) {
+        case GLFW_KEY_J: player.p_pos.y += player.size; break;
+        case GLFW_KEY_K: player.p_pos.y -= player.size; break;
+        case GLFW_KEY_L: player.p_pos.x += player.size; break;
+        case GLFW_KEY_H: player.p_pos.x -= player.size; break;
+        }
+        lastFrame = currentFrame;
+    }
+
+
+    /*
+    if (key == GLFW_KEY_J && action == GLFW_PRESS) {
+        player.p_pos.y += player.size;
+    }
+    */
+
+    /*
+    if (key == GLFW_KEY_J && action != GLFW_RELEASE) {
+        player.p_pos.y += player.size;
+    }
+
+    if (key == GLFW_KEY_K && action == GLFW_RELEASE) {
+        player.p_pos.y -= player.size;
+    }
+
+    if (key == GLFW_KEY_L && action == GLFW_RELEASE) {
+        player.p_pos.x += player.size;
+    }
+
+    if (key == GLFW_KEY_H && action == GLFW_RELEASE) {
+        player.p_pos.x -= player.size;
+    }
+    */
+
+    if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+}
+
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        std::cout << xpos << " " << ypos << "\n";
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
