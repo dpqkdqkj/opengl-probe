@@ -5,6 +5,13 @@
 
 namespace myGame {
 
+enum MOVE_DIR {
+    UP = 0,
+    DOWN,
+    LEFT,
+    RIGHT,
+};
+
 class Player {
     GLuint VAO;
     GLuint shaderProgram;
@@ -19,9 +26,16 @@ public:
 
     void draw();
 
+    void move(unsigned int dir);
+
     glm::vec3 p_pos;
     unsigned int size;
     bool isMove = false;
+
+    float min_x_pos;
+    float min_y_pos;
+    float max_x_pos;
+    float max_y_pos;
     
 };
 
@@ -132,6 +146,36 @@ void Player::initialize()
     glm::mat4 projection = glm::ortho(0.0f, 512.0f, 512.0f, 0.0f, -1.0f, 1.0f);
     glUseProgram(shaderProgram);
     glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "projection"), 1, GL_FALSE, &projection[0][0]);
+}
+
+void Player::move(unsigned int dir)
+{
+    switch (dir) {
+    case DOWN:
+    {
+        p_pos.y += size;
+        if (p_pos.y > max_y_pos) p_pos.y = min_y_pos;
+        break;
+    }
+    case UP:
+    {
+        p_pos.y -= size;
+        if (p_pos.y < min_y_pos) p_pos.y = max_y_pos;
+        break;
+    }
+    case LEFT:
+    {
+        p_pos.x -= size;
+        if (p_pos.x < min_x_pos) p_pos.x = max_x_pos;
+        break;
+    }
+    case RIGHT:
+    {
+        p_pos.x += size;
+        if (p_pos.x > max_x_pos) p_pos.x = min_x_pos;
+        break;
+    }
+    }
 }
 
 

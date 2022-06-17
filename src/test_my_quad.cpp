@@ -74,6 +74,10 @@ int main()
     //myGame::Player player;
     player.size = q_a;
     player.p_pos = glm::vec3(padding + q_a * 1 + q_a/2.0f, padding + q_a * 1 + q_a/2.0f, 0.0f);
+    player.max_x_pos = (float)SCR_WIDTH - padding - q_a/2.0f;
+    player.max_y_pos = (float)SCR_HEIGHT - padding - q_a/2.0f;
+    player.min_x_pos = padding + q_a/2.0f;
+    player.min_y_pos = padding + q_a/2.0f;
     player.initialize();
 
     glfwSetKeyCallback(window, key_callback);
@@ -160,7 +164,6 @@ int main()
 
 GLfloat currentFrame = 0.0f, deltaTime = 0.0f, lastFrame = 0.0f;
     float q_a = 48.0f;
-    //float q_a = 128.0f;
     float padding = 64.0f;
     float max_x_grid = (float)SCR_WIDTH - padding - q_a/2.0f;
     float max_y_grid = (float)SCR_HEIGHT - padding - q_a/2.0f;
@@ -192,34 +195,14 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
     currentFrame = glfwGetTime();
     deltaTime = currentFrame - lastFrame;
     if ((action != GLFW_RELEASE) && deltaTime >= 0.02f) {
+        unsigned int dir = 5;
         switch (key) {
-        case GLFW_KEY_J:
-        {
-            //player.p_pos.y += player.size;// % max_y_grid;
-            //if (player.p_pos.y > max_y_grid) player.p_pos.y = min_y_grid;
-            //std::cout << MOVE_DIR(UP) << "\n";
-            player.move(UP);
-            break;
+        case GLFW_KEY_J: dir = DOWN; break;
+        case GLFW_KEY_K: dir = UP; break;
+        case GLFW_KEY_H: dir = LEFT; break;
+        case GLFW_KEY_L: dir = RIGHT; break;
         }
-        case GLFW_KEY_K:
-        {
-            player.p_pos.y -= player.size;
-            if (player.p_pos.y < min_y_grid) player.p_pos.y = max_y_grid;
-            break;
-        }
-        case GLFW_KEY_L:
-        {
-            player.p_pos.x += player.size;
-            if (player.p_pos.x > max_x_grid) player.p_pos.x = min_x_grid;
-            break;
-        }
-        case GLFW_KEY_H:
-        {
-            player.p_pos.x -= player.size;
-            if (player.p_pos.x < min_x_grid) player.p_pos.x = max_x_grid;
-            break;
-        }
-        }
+        player.move(dir);
         lastFrame = currentFrame;
         //std::cout << deltaTime << "\n";
     }
