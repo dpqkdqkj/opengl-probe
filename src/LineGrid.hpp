@@ -55,7 +55,7 @@ void LineGrid::compile_shader()
         "   FragColor = vec4(0.16f, 0.16f, 0.16f, 1.0f);\n"
         "}\n\0";
 
-    // build and compile our shader program
+    // build aand compile our shader program
     // ------------------------------------
     // vertex shader
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
