@@ -1,19 +1,19 @@
 #include <glad/glad.h>
+#include <vector>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <vector>
+#include <string>
 #include <iostream>
+#include <ostream>
 
 namespace myPrimitive {
 
 class LineGrid {
     GLuint VAO;
 
-    //float padding = 64.0f;
     float padding;
-    //float step = 48.0f;
     float step;
 
     float SCR_WIDTH;
